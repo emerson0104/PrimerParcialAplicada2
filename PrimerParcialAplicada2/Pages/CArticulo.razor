@@ -1,0 +1,300 @@
+﻿@page "/Consulta"
+
+@using PrimerParcialAplicada2.Models
+
+@using PrimerParcialAplicada2.BLL
+
+
+
+@inject IToastService toast
+
+
+
+<div class="card">
+
+
+
+    <div class="card-header">
+
+        <h3>Consulta de Producto</h3>
+
+    </div>
+
+
+
+    <div class="card-body">
+
+        <div class="form-group">
+
+            <div class="form-row">
+
+                <div class="input-group">
+
+                    <div class="col">
+
+                        <input type="text" class="form-control" placeholder="Criterio" @bind="criterio" />
+
+                    </div>
+
+
+
+                    <div class="col">
+
+                        <select class="form-control" @bind="filtro">
+
+                            <option value="0">Todos</option>
+
+                            <option value="1">Id</option>
+
+
+
+                        </select>
+
+                    </div>
+
+
+
+                    <div class="input-group-append">
+
+                        <button type="button" class="btn btn-primary" @onclick="Consultar">Consultar</button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+
+
+
+
+    <table class="table">
+
+        <thead class="thead-light">
+
+            <tr>
+
+                <th>Id</th>
+
+                <th>Descripcion</th>
+
+                <th>Existencia</th>
+
+                <th>Costo</th>
+
+                <th>Valor Inventario</th>
+
+            </tr>
+
+        </thead>
+
+        <tbody>
+
+            @foreach (var item in lista)
+
+            {
+
+                <tr>
+
+                    <td>@item.ArtiiculoId</td>
+
+                    <td>@item.Descripcion</td>
+
+                    <td>@item.Existencia</td>
+
+                    <td>@item.Costo</td>
+
+                    <td>@item.Inventario</td>
+
+                </tr>
+
+            }
+
+        </tbody>
+
+
+
+    </table>
+
+
+
+    <div class="card-footer">
+
+        <div class="form-group text-center" display:inline-block>
+
+            <div class="form-row">
+
+                <div class="row">
+
+                    <div class="input-group">
+
+                        <label>TOTAL VALOR INVENTARIO:</label>
+
+                        <div class="input-group-append">
+
+                            <input type="text" class="form-control" @bind="Total" readonly />
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+</div>
+
+@code {
+
+    public int filtro { get; set; }
+
+
+
+    public string criterio { get; set; }
+
+
+
+    public List<Articulos> lista = new List<Articulos>();
+
+
+
+    public decimal Total { get; set; }
+
+
+
+
+
+
+
+    private void Consultar()
+
+    {
+
+        try
+
+        {
+
+            switch (filtro)
+
+            {
+
+                case 0: //Todos
+
+                    this.lista = ArticuloBLL.GetList(p => true);
+
+                    Sumar();
+
+                    break;
+
+                case 1: //Id
+
+                    int ID = Id();
+
+                    this.lista = ArticuloBLL.GetList(a => a.ArtiiculoId == ID);
+
+                    Sumar();
+
+                    break;
+
+
+
+            }
+
+        }
+
+        catch (Exception)
+
+        {
+
+
+
+            throw;
+
+        }
+
+    }
+
+
+
+    private int Id()
+
+    {
+
+        int resultado = 0;
+
+
+
+        try
+
+        {
+
+            resultado = Convert.ToInt32(criterio);
+
+            return resultado;
+
+        }
+
+        catch (Exception)
+
+        {
+
+
+
+          
+
+        }
+
+
+
+        return resultado;
+
+    }
+
+
+
+
+
+
+
+    private void Sumar()
+
+    {
+
+        decimal Valor = 0;
+
+        if (lista != null)
+
+        {
+
+            foreach (var item in lista)
+
+            {
+
+                Valor += item.Inventario;
+
+            }
+
+
+
+            Total = Valor;
+
+        }
+
+
+
+    }
+
+
+}
